@@ -30,4 +30,12 @@ export default class SessionController {
       }
     }
   }
+
+  async destroy({ auth }: HttpContext) {
+    await auth.use('jwt').revoke()
+
+    return {
+      message: 'Logged out',
+    }
+  }
 }

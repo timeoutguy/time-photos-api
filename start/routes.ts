@@ -28,11 +28,16 @@ router.group(() => {
 })
 
 router.post('login', [SessionController, 'store'])
-router.post('login/token', [SessionController, 'loginWithToken']).use(
-  middleware.auth({
-    guards: ['api'],
+router
+  .group(() => {
+    router.post('login/token', [SessionController, 'loginWithToken'])
+    router.post('logout', [SessionController, 'destroy'])
   })
-)
+  .use(
+    middleware.auth({
+      guards: ['jwt'],
+    })
+  )
 
 router
   .group(() => {
@@ -44,6 +49,6 @@ router
   })
   .use(
     middleware.auth({
-      guards: ['api'],
+      guards: ['jwt'],
     })
   )

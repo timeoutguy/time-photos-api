@@ -1,3 +1,4 @@
+import RevokedToken from '#models/revoked_token'
 import User from '#models/user'
 import { errors, symbols } from '@adonisjs/auth'
 import { AuthClientResponse, GuardContract } from '@adonisjs/auth/types'
@@ -85,6 +86,12 @@ export class JwtGuard<UserProvider extends JwtUserProviderContract<User>>
       })
     }
 
+    if (await RevokedToken.findBy('token', token)) {
+      throw new errors.E_UNAUTHORIZED_ACCESS('Unauthorized access', {
+        guardDriverName: this.driverName,
+      })
+    }
+
     const payload = jwt.verify(token, this.#options.secret)
 
     if (typeof payload !== 'object' || !('userId' in payload)) {
@@ -133,5 +140,15 @@ export class JwtGuard<UserProvider extends JwtUserProviderContract<User>>
         authorization: `Bearer ${token.token}`,
       },
     }
+  }
+
+  async revoke() {
+    const revokedToken = new RevokedToken()
+    const authHeader = this.#ctx.request.header('Authorization')
+    const [, token] = authHeader!.split('Bearer ')
+
+    revokedToken.token = token
+
+    await revokedToken.save()
   }
 }
