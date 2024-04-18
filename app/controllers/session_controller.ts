@@ -7,7 +7,7 @@ export default class SessionController {
 
     const user = await User.verifyCredentials(email, password)
 
-    const token = await auth.use('jwt').genereate(user)
+    const token = await auth.use('jwt').genereate(user, rememberMe)
 
     return {
       user: {

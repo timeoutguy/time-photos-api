@@ -45,9 +45,8 @@ export class JwtGuard<UserProvider extends JwtUserProviderContract<User>>
 
   user?: UserProvider[typeof symbols.PROVIDER_REAL_USER]
 
-  async genereate(user: UserProvider[typeof symbols.PROVIDER_REAL_USER]) {
+  async genereate(user: UserProvider[typeof symbols.PROVIDER_REAL_USER], rememberMe: boolean) {
     const providerUser = await this.#userProvider.createUserForGuard(user)
-    const remembered = this.#ctx.request.body().rememberMe
     const token = jwt.sign(
       {
         userId: providerUser.getId(),
@@ -55,7 +54,7 @@ export class JwtGuard<UserProvider extends JwtUserProviderContract<User>>
         email: providerUser.getOriginal().email,
       },
       this.#options.secret,
-      { expiresIn: remembered ? '30d' : '1d' }
+      { expiresIn: rememberMe ? '30d' : '1d' }
     )
 
     return {
