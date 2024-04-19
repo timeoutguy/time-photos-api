@@ -27,7 +27,7 @@ export default class ImagesController {
   async store({ request, auth }: HttpContext) {
     const { image: imageFile } = await request.validateUsing(createImageValidator)
 
-    await imageFile.move(app.makePath('uploads'), {
+    await imageFile.move(app.publicPath('uploads'), {
       name: `${cuid()}.${imageFile.extname}`,
     })
 
@@ -35,7 +35,7 @@ export default class ImagesController {
 
     image.path = imageFile.fileName ?? ''
     image.name = request.input('name')
-    image.user_id = auth.user?.id as number
+    image.user_id = auth.user?.id as string
 
     await image.save()
 
