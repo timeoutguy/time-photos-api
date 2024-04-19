@@ -10,6 +10,7 @@
 const UsersController = () => import('#controllers/users_controller')
 const ImagesController = () => import('#controllers/images_controller')
 const SessionController = () => import('#controllers/session_controller')
+const CategoriesController = () => import('#controllers/categories_controller')
 import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
 
@@ -46,6 +47,20 @@ router
     router.get('images/:id', [ImagesController, 'show'])
     router.patch('images/:id', [ImagesController, 'update'])
     router.delete('images/:id', [ImagesController, 'destroy'])
+  })
+  .use(
+    middleware.auth({
+      guards: ['jwt'],
+    })
+  )
+
+router
+  .group(() => {
+    router.get('categories', [CategoriesController, 'index'])
+    router.get('categories/:id', [CategoriesController, 'show'])
+    router.post('categories', [CategoriesController, 'store'])
+    router.patch('categories/:id', [CategoriesController, 'update'])
+    router.delete('categories/:id', [CategoriesController, 'destroy'])
   })
   .use(
     middleware.auth({
