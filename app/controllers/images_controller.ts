@@ -11,7 +11,7 @@ export default class ImagesController {
    * Display a list of resource
    */
   async index({ auth }: HttpContext) {
-    const images = await Image.findManyBy('user_id', auth.user?.id)
+    const images = await Image.query().where('user_id', auth.user!.id).preload('categories')
 
     return images
   }
@@ -54,6 +54,7 @@ export default class ImagesController {
    */
   async show({ params, auth }: HttpContext) {
     const image = await Image.findByOrFail({ id: params.id, user_id: auth.user?.id })
+    await image.load('categories')
 
     return image
   }
@@ -71,7 +72,7 @@ export default class ImagesController {
     const image = await Image.findOrFail(params.id)
 
     if (payload.image) {
-      await payload.image.move(app.makePath('uploads'), {
+      await payload.image.move(app.publicPath('uploads'), {
         name: `${cuid()}.${payload.image.extname}`,
       })
       const filePath = image.path
@@ -85,7 +86,13 @@ export default class ImagesController {
       name: payload.name,
     })
 
+    if (payload.categories) {
+      await image.related('categories').sync(payload.categories)
+    }
+
     await image.save()
+
+    await image.load('categories')
 
     return image
   }
