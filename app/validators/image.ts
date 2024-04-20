@@ -7,6 +7,7 @@ export const createImageValidator = vine.compile(
       extnames: ['jpg', 'jpeg', 'png'],
     }),
     name: vine.string().trim().maxLength(255),
+    categories: vine.array(vine.string()).optional(),
   })
 )
 
@@ -19,5 +20,6 @@ export const updateImageValidator = vine.compile(
       })
       .optional(),
     name: vine.string().trim().maxLength(255).optional(),
+    categories: vine.array(vine.string()).optional(),
   })
 )
