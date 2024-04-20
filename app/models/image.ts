@@ -1,8 +1,16 @@
 import { DateTime } from 'luxon'
-import { BaseModel, beforeCreate, belongsTo, column, computed } from '@adonisjs/lucid/orm'
+import {
+  BaseModel,
+  beforeCreate,
+  belongsTo,
+  column,
+  computed,
+  manyToMany,
+} from '@adonisjs/lucid/orm'
 import User from './user.js'
-import type { BelongsTo } from '@adonisjs/lucid/types/relations'
+import type { BelongsTo, ManyToMany } from '@adonisjs/lucid/types/relations'
 import { randomUUID } from 'node:crypto'
+import Category from '#models/category'
 
 export default class Image extends BaseModel {
   static selfAssignPrimaryKey = true
@@ -27,6 +35,9 @@ export default class Image extends BaseModel {
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime
+
+  @manyToMany(() => Category)
+  declare categories: ManyToMany<typeof Category>
 
   @computed()
   get url() {
